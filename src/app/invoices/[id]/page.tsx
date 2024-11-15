@@ -1,10 +1,9 @@
-"use client";
-import { useParams } from "next/navigation";
+import InvoiceDetails from "@/features/invoices/InvoiceDetails";
+
 import React from "react";
 
 const page = () => {
-  const { id } = useParams();
-  return <div>{id}</div>;
+  return <InvoiceDetails />;
 };
 
 export default page;
