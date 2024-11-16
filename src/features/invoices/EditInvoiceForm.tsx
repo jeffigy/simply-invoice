@@ -1,20 +1,28 @@
-"use client";
+import React, { useEffect, useState } from "react";
+import { statuses, statusesType } from "./NewInvoiceForm";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { AxiosApiResponse } from "@/types/axiosApiResponse";
 import LabeledInput from "@/components/LabeledInput";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
-  CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardContent,
+  CardFooter,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { CalendarIcon, Loader } from "lucide-react";
+import { newInvoice } from "./invoiceApi";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectContent,
@@ -22,38 +30,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { CalendarIcon, Loader } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { useNewInvoiceMutation } from "./invoiceMutations";
-import { toast } from "sonner";
-import { AxiosApiResponse } from "@/types/axiosApiResponse";
-import { useRouter } from "next/navigation";
 
-export type statusesType = "Pending" | "Paid" | "Overdue" | "Cancelled";
-export const statuses = ["Pending", "Paid", "Overdue", "Cancelled"];
-
-const NewInvoiceForm = () => {
+const EditInvoiceForm = ({ invoice }: { invoice: InvoiceType }) => {
   const router = useRouter();
-  const {
-    mutateAsync: newInvoice,
-    isPending,
-    isError,
-    error,
-    isSuccess,
-  } = useNewInvoiceMutation();
-  const [customerName, setCustomerName] = useState("");
-  const [dueDate, setDueDate] = useState<Date | undefined>(new Date());
-  const [status, setStatus] = useState<statusesType | "">("");
-  const [subTotal, setSubTotal] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [tax, setTax] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-
-  const handleChange = (value: statusesType) => {
-    setStatus(value);
-  };
+  //   const {
+  //     mutateAsync: newInvoice,
+  //     isPending,
+  //     isError,
+  //     error,
+  //     isSuccess,
+  //   } = useNewInvoiceMutation();
+  const [customerName, setCustomerName] = useState(invoice.customer_name);
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    new Date(invoice.due_date)
+  );
+  const [status, setStatus] = useState<"" | statusesType>(
+    invoice.status as statusesType
+  );
+  const [subTotal, setSubTotal] = useState(invoice.subtotal);
+  const [discount, setDiscount] = useState(invoice.discount);
+  const [tax, setTax] = useState(invoice.tax);
+  const [totalAmount, setTotalAmount] = useState(invoice.total_amount);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,18 +69,18 @@ const NewInvoiceForm = () => {
     router.back();
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Success", {
-        description: "New invoice added",
-      });
-    }
-    if (isError) {
-      toast.error("Error", {
-        description: (error as AxiosApiResponse).response?.data?.message,
-      });
-    }
-  }, [isSuccess, isError]);
+  //   useEffect(() => {
+  //     if (isSuccess) {
+  //       toast.success("Success", {
+  //         description: "New invoice added",
+  //       });
+  //     }
+  //     if (isError) {
+  //       toast.error("Error", {
+  //         description: (error as AxiosApiResponse).response?.data?.message,
+  //       });
+  //     }
+  //   }, [isSuccess, isError]);
 
   return (
     <form onSubmit={onSubmit}>
@@ -129,13 +126,16 @@ const NewInvoiceForm = () => {
           </div>
           <div>
             <Label htmlFor={"status"}>Status</Label>
-            <Select value={status} onValueChange={handleChange}>
+            <Select
+              value={status}
+              onValueChange={(value: statusesType) => setStatus(value)}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
                 {statuses.map((status) => (
-                  <SelectItem value={status} key={status}>
+                  <SelectItem value={status as statusesType} key={status}>
                     {status}
                   </SelectItem>
                 ))}
@@ -169,7 +169,7 @@ const NewInvoiceForm = () => {
           />
         </CardContent>
         <CardFooter>
-          <Button disabled={isPending} className="w-full">
+          {/* <Button disabled={isPending} className="w-full">
             {isPending ? (
               <>
                 <Loader /> Submitting...
@@ -177,11 +177,12 @@ const NewInvoiceForm = () => {
             ) : (
               "Submit"
             )}
-          </Button>
+          </Button> */}
         </CardFooter>
       </Card>
     </form>
   );
+  return <div>EditInvoiceForm</div>;
 };
 
-export default NewInvoiceForm;
+export default EditInvoiceForm;

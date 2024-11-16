@@ -1,29 +1,26 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useParams } from "next/navigation";
+import { Pencil, Trash2Icon, TrashIcon } from "lucide-react";
+import Link from "next/link";
+
 import React from "react";
-import { useInvoices } from "./invoiceQueries";
 
-const InvoiceDetails = () => {
-  const { id } = useParams();
-
-  const { data, isLoading, isError, error } = useInvoices();
-
-  if (isError) return <p>{error.message}</p>;
-
-  if (isLoading) return <p>loading...</p>;
-
-  const invoice: InvoiceType = data.find(
-    (invoice: InvoiceType) => invoice.invoice_id === id
-  );
-
-  if (!invoice) return <p>invoice not found</p>;
-  console.log(invoice);
-
+const InvoiceDetails = ({ invoice }: { invoice: InvoiceType }) => {
   return (
     <Card className="rounded-none mx-auto max-w-screen-md">
-      <CardHeader>
-        <CardTitle>Invoice Details</CardTitle>
+      <CardHeader className="flex-row items-center justify-between">
+        <CardTitle>Invoice Details</CardTitle>{" "}
+        <div>
+          <Link href={`/invoices/${invoice.invoice_id}/edit`}>
+            <Button variant={"ghost"}>
+              <Pencil />
+            </Button>
+          </Link>
+          <Button variant={"ghost"}>
+            <Trash2Icon />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className=" space-y-3 bg-base-100 p-3">

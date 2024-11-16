@@ -1,9 +1,7 @@
 "use client";
-import InvoiceDetails from "@/features/invoices/InvoiceDetails";
+import EditInvoiceForm from "@/features/invoices/EditInvoiceForm";
 import { useInvoices } from "@/features/invoices/invoiceQueries";
 import { useParams } from "next/navigation";
-
-import React from "react";
 
 const page = () => {
   const { id } = useParams();
@@ -17,7 +15,8 @@ const page = () => {
   );
 
   if (!invoice) return <p>invoice not found</p>;
-  return <InvoiceDetails invoice={invoice} />;
+
+  return <EditInvoiceForm invoice={invoice} />;
 };
 
 export default page;
