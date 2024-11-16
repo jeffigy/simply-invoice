@@ -2,15 +2,21 @@ import { query } from "@/lib/db";
 import { isValidUUID } from "@/lib/validateId";
 import { NextResponse } from "next/server";
 
-export async function GET(
+export async function PATCH(
   req: Request,
-  context: {
-    params: any;
-  }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const invoiceId = await context.params.id;
-    const body = await req.json();
+    const { id: invoiceId } = await params;
+    const {
+      customer_name,
+      due_date,
+      status,
+      subTotal,
+      discount,
+      tax,
+      totalAmount,
+    } = await req.json();
 
     if (!isValidUUID(invoiceId)) {
       return NextResponse.json(
@@ -31,8 +37,20 @@ export async function GET(
       );
     }
 
-    // const updateInvoice =
-    return NextResponse.json({ message: invoiceId }, { status: 200 });
+    const updateInvoice = await query(
+      "UPDATE invoices SET customer_name = $1, due_date = $2, status = $3, subtotal = $4,  discount = $5, tax = $6, total_amount = $7 WHERE invoice_id = $8 RETURNING *",
+      [
+        customer_name,
+        due_date,
+        status,
+        subTotal,
+        discount,
+        tax,
+        totalAmount,
+        invoiceId,
+      ]
+    );
+    return NextResponse.json(updateInvoice, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { message: "Server Error: " + error.message },

@@ -30,16 +30,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUpdateInvoiceMutation } from "./invoiceMutations";
 
 const EditInvoiceForm = ({ invoice }: { invoice: InvoiceType }) => {
   const router = useRouter();
-  //   const {
-  //     mutateAsync: newInvoice,
-  //     isPending,
-  //     isError,
-  //     error,
-  //     isSuccess,
-  //   } = useNewInvoiceMutation();
+  const {
+    mutateAsync: updateInvoice,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+  } = useUpdateInvoiceMutation();
   const [customerName, setCustomerName] = useState(invoice.customer_name);
   const [dueDate, setDueDate] = useState<Date | undefined>(
     new Date(invoice.due_date)
@@ -65,29 +66,30 @@ const EditInvoiceForm = ({ invoice }: { invoice: InvoiceType }) => {
       totalAmount,
     };
     console.log(invoiceObj);
-    await newInvoice(invoiceObj);
+    await updateInvoice({ id: invoice.invoice_id!, invoice: invoiceObj });
     router.back();
   };
 
-  //   useEffect(() => {
-  //     if (isSuccess) {
-  //       toast.success("Success", {
-  //         description: "New invoice added",
-  //       });
-  //     }
-  //     if (isError) {
-  //       toast.error("Error", {
-  //         description: (error as AxiosApiResponse).response?.data?.message,
-  //       });
-  //     }
-  //   }, [isSuccess, isError]);
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Success", {
+        description: "invoice updated",
+      });
+    }
+    if (isError) {
+      toast.error("Error", {
+        description:
+          (error as AxiosApiResponse).response?.data?.message ?? error.message,
+      });
+    }
+  }, [isSuccess, isError]);
 
   return (
     <form onSubmit={onSubmit}>
       {" "}
       <Card className="mx-auto max-w-md">
         <CardHeader>
-          <CardTitle>New Invoice</CardTitle>
+          <CardTitle>Update Invoice</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <LabeledInput
@@ -169,7 +171,7 @@ const EditInvoiceForm = ({ invoice }: { invoice: InvoiceType }) => {
           />
         </CardContent>
         <CardFooter>
-          {/* <Button disabled={isPending} className="w-full">
+          <Button disabled={isPending} className="w-full">
             {isPending ? (
               <>
                 <Loader /> Submitting...
@@ -177,12 +179,11 @@ const EditInvoiceForm = ({ invoice }: { invoice: InvoiceType }) => {
             ) : (
               "Submit"
             )}
-          </Button> */}
+          </Button>
         </CardFooter>
       </Card>
     </form>
   );
-  return <div>EditInvoiceForm</div>;
 };
 
 export default EditInvoiceForm;

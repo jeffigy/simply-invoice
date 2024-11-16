@@ -68,8 +68,8 @@ const NewInvoiceForm = () => {
       totalAmount,
     };
     console.log(invoiceObj);
-    await newInvoice(invoiceObj);
-    router.back();
+    // await newInvoice(invoiceObj);
+    // router.back();
   };
 
   useEffect(() => {
