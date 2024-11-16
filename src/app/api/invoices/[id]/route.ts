@@ -58,3 +58,45 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+    if (!id) {
+      return NextResponse.json({ message: "Id is required" }, { status: 400 });
+    }
+
+    if (!isValidUUID(id)) {
+      return NextResponse.json({ message: "Invalid Id" }, { status: 400 });
+    }
+
+    const foundInvoice: any = await query(
+      "SELECT EXISTS (SELECT 1 FROM invoices WHERE invoice_id = $1)",
+      [id]
+    );
+
+    if (!foundInvoice[0].exists) {
+      return NextResponse.json(
+        { message: "Invoice not found" },
+        { status: 404 }
+      );
+    }
+
+    const deleteInvoice = await query(
+      "DELETE FROM  invoices WHERE invoice_id = $1 RETURNING customer_name",
+      [id]
+    );
+
+    return NextResponse.json({
+      message: `Invoice with customer name ${deleteInvoice[0].customer_name} has been deleted`,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: "Server Error: " + error.message },
+      { status: 500 }
+    );
+  }
+}

@@ -4,7 +4,8 @@ import { Toaster } from "sonner";
 const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      {children} <Toaster position="bottom-center" richColors={true} />
+      {children}
+      <Toaster closeButton={true} position="bottom-center" />
     </>
   );
 };

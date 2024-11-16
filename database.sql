@@ -3,7 +3,7 @@ CREATE DATABASE simply_invoice;
 CREATE TABLE invoices (
     invoice_id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
     customer_name VARCHAR(255) NOT NULL,
-    due_date DATE NOT NULL,
+    due_date TIMESTAMP WITH TIME ZONE NOT NULL,
     status VARCHAR(20) NOT NULL,
     subtotal DECIMAL(10, 2),
     discount DECIMAL(10, 2) DEFAULT 0,

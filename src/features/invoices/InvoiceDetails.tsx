@@ -5,6 +5,7 @@ import { Pencil, Trash2Icon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 
 import React from "react";
+import DeleteInvoiceModal from "./DeleteInvoiceModal";
 
 const InvoiceDetails = ({ invoice }: { invoice: InvoiceType }) => {
   return (
@@ -17,9 +18,7 @@ const InvoiceDetails = ({ invoice }: { invoice: InvoiceType }) => {
               <Pencil />
             </Button>
           </Link>
-          <Button variant={"ghost"}>
-            <Trash2Icon />
-          </Button>
+          <DeleteInvoiceModal />
         </div>
       </CardHeader>
       <CardContent>
